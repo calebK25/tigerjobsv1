@@ -1,73 +1,103 @@
-# Welcome to your Lovable project
+# TigerJobs - Job Application Tracking System
 
-## Project info
+TigerJobs is a modern, feature-rich job application tracking system built with React and TypeScript. It helps job seekers manage their job applications, interviews, and career progress all in one place.
 
-**URL**: https://lovable.dev/projects/a19744ef-a879-4067-bbf5-6f6c48493180
+![TigerJobs Banner](public/placeholder.svg)
 
-## How can I edit this code?
+## 🌟 Features
 
-There are several ways of editing your application.
+- **Application Tracking**: Keep track of all your job applications in one place
+- **Interview Management**: Schedule and manage your upcoming interviews
+- **Analytics Dashboard**: Get insights into your job search progress
+- **Calendar Integration**: View all your important dates and deadlines
+- **Google Sheets Import**: Import your existing job applications from Google Sheets
+- **Resume Management**: Store and manage your resumes
+- **Profile Management**: Maintain your professional profile
+- **Modern UI**: Beautiful and responsive interface built with shadcn/ui
 
-**Use Lovable**
+## 🚀 Getting Started
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/a19744ef-a879-4067-bbf5-6f6c48493180) and start prompting.
+### Prerequisites
 
-Changes made via Lovable will be committed automatically to this repo.
+- Node.js (LTS version recommended)
+- npm or yarn package manager
 
-**Use your preferred IDE**
+### Installation
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+1. Clone the repository:
+```bash
+git clone https://github.com/calebK25/tigerjobsv1.git
+cd tigerjobsv1
+```
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+2. Install dependencies:
+```bash
+npm install
+```
 
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+3. Start the development server:
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The application will be available at `http://localhost:5173`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 🛠 Tech Stack
 
-**Use GitHub Codespaces**
+- **Frontend Framework**: React 18
+- **Language**: TypeScript
+- **Build Tool**: Vite
+- **UI Components**: shadcn/ui
+- **Styling**: Tailwind CSS
+- **State Management**: React Query
+- **Backend/Auth**: Supabase
+- **Charts**: Recharts
+- **Form Handling**: React Hook Form
+- **Date Management**: date-fns
+- **Routing**: React Router DOM
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 📦 Project Structure
 
-## What technologies are used for this project?
+```
+src/
+├── components/     # Reusable UI components
+├── context/       # React context providers
+├── hooks/         # Custom React hooks
+├── pages/         # Application pages/routes
+├── services/      # API and external service integrations
+├── types/         # TypeScript type definitions
+└── utils/         # Utility functions
+```
 
-This project is built with:
+## 🔧 Available Scripts
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
 
-## How can I deploy this project?
+## 🤝 Contributing
 
-Simply open [Lovable](https://lovable.dev/projects/a19744ef-a879-4067-bbf5-6f6c48493180) and click on Share -> Publish.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-## Can I connect a custom domain to my Lovable project?
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-Yes, you can!
+## 📝 License
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## 🙏 Acknowledgments
+
+- [shadcn/ui](https://ui.shadcn.com/) for the beautiful UI components
+- [Supabase](https://supabase.com/) for backend services
+- All the amazing open-source libraries that made this project possible
+
+## 📧 Contact
+
+Caleb - [@calebK25](https://github.com/calebK25)
+
+Project Link: [https://github.com/calebK25/tigerjobsv1](https://github.com/calebK25/tigerjobsv1)
