@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resetting Authentication...</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #000;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    .container {
+      max-width: 500px;
+    }
+    .loader {
+      border: 4px solid rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      border-top: 4px solid #3498db;
+      width: 40px;
+      height: 40px;
+      margin: 20px auto;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .status {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #aaa;
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    p {
+      margin-bottom: 20px;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    .message {
+      background: rgba(52, 152, 219, 0.1);
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 20px;
+      border-left: 3px solid #3498db;
+    }
+    button {
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    button:hover {
+      background: #2980b9;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Resetting Authentication</h1>
+    <p>Please wait while we reset your authentication state...</p>
+    <div class="loader"></div>
+    <div class="status" id="status">Clearing local storage...</div>
+    <div class="message" id="message"></div>
+  </div>
+
+  <script>
+    // Update status message
+    function updateStatus(text) {
+      document.getElementById('status').textContent = text;
+    }
+    
+    // Show message
+    function showMessage(text, isError = false) {
+      const messageEl = document.getElementById('message');
+      messageEl.textContent = text;
+      messageEl.style.borderLeftColor = isError ? '#e74c3c' : '#2ecc71';
+      messageEl.style.background = isError ? 'rgba(231, 76, 60, 0.1)' : 'rgba(46, 204, 113, 0.1)';
+    }
+    
+    // Main reset function
+    async function resetAuth() {
+      try {
+        // Step 1: Clear localStorage
+        updateStatus('Clearing local storage...');
+        localStorage.clear();
+        
+        // Step 2: Clear sessionStorage
+        updateStatus('Clearing session storage...');
+        sessionStorage.clear();
+        
+        // Step 3: Clear cookies
+        updateStatus('Clearing cookies...');
+        document.cookie.split(";").forEach(function(c) {
+          document.cookie = c
+            .replace(/^ +/, "")
+            .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+        });
+        
+        // Step 4: Try to manually reset any Supabase auth
+        updateStatus('Resetting Supabase authentication...');
+        try {
+          // Make a direct fetch to Supabase logout endpoint
+          await fetch('https://sapqzpssmxsfctzlsbip.supabase.co/auth/v1/logout', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+        } catch (e) {
+          console.error('Supabase logout error:', e);
+          // Continue anyway - this is just an extra precaution
+        }
+        
+        // Step 5: Reset completed
+        updateStatus('Authentication reset completed!');
+        showMessage('Your authentication state has been reset successfully. You can now return to the login page.');
+        
+        // Add a back button to return to login
+        const backButton = document.createElement('button');
+        backButton.textContent = 'Return to Login';
+        backButton.addEventListener('click', function() {
+          window.location.href = '/login?reset=' + new Date().getTime();
+        });
+        document.querySelector('.container').appendChild(backButton);
+        
+      } catch (error) {
+        console.error('Reset error:', error);
+        updateStatus('Error occurred during reset');
+        showMessage('An error occurred while resetting your authentication state. Please try again.', true);
+        
+        // Add a retry button
+        const retryButton = document.createElement('button');
+        retryButton.textContent = 'Try Again';
+        retryButton.addEventListener('click', resetAuth);
+        document.querySelector('.container').appendChild(retryButton);
+      }
+    }
+    
+    // Start the reset process
+    window.addEventListener('load', resetAuth);
+  </script>
+</body>
+</html> 

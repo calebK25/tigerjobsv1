@@ -6,8 +6,7 @@ import { Briefcase, ArrowRight, Mail, LogIn, X, RotateCcw } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import gsap from 'gsap';
 import { toast } from 'sonner';
-import { ClearSessionButton } from '@/components/ui/clear-session-button';
-import { supabase } from '@/integrations/supabase/client';
+import { RedirectFixButton } from '@/components/auth/RedirectFixButton';
 
 const LoginPage = () => {
   const { user, login, loginWithEmail, loading } = useAuth();
@@ -17,6 +16,7 @@ const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [emailSent, setEmailSent] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [hasRedirectIssue, setHasRedirectIssue] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -61,19 +61,26 @@ const LoginPage = () => {
     }
   }, []);
 
-  // Check for redirect issues
+  // Check for auth redirect issues
   useEffect(() => {
-    // Check if we've been redirected from a Lovable URL
-    const referrer = document.referrer;
-    const url = new URL(window.location.href);
-    const hasRedirectIssue = 
-      referrer.includes('lovable.app') || 
-      url.hash.includes('access_token') || 
-      url.search.includes('access_token');
+    const checkForRedirectIssues = () => {
+      // Check URL for signs of redirect issues
+      const url = new URL(window.location.href);
+      const hasPotentialIssue = 
+        url.hash.includes('access_token') || 
+        url.search.includes('refresh_token') ||
+        url.search.includes('provider_token') ||
+        document.referrer.includes('lovable') || 
+        localStorage.getItem('supabase.auth.token') !== null;
+      
+      if (hasPotentialIssue) {
+        console.warn('Detected potential redirect issues');
+        setHasRedirectIssue(true);
+        toast.warning('Authentication redirect issues detected. Use the fix button below.');
+      }
+    };
     
-    if (hasRedirectIssue) {
-      toast.error('Detected authentication redirect issue. Please clear your session.');
-    }
+    checkForRedirectIssues();
   }, []);
 
   const handleLoginClick = async () => {
@@ -95,32 +102,6 @@ const LoginPage = () => {
     } catch (error) {
       console.error('Email sign-in error:', error);
       setAuthError('Failed to send magic link. Please try again.');
-    }
-  };
-
-  // Function to clear the redirect issue
-  const handleFixRedirect = async () => {
-    try {
-      // Clear browser storage
-      localStorage.clear();
-      sessionStorage.clear();
-      
-      // Clear cookies
-      document.cookie.split(";").forEach(function(c) {
-        document.cookie = c
-          .replace(/^ +/, "")
-          .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-      });
-      
-      // Sign out from Supabase
-      await supabase.auth.signOut({ scope: 'global' });
-      
-      // Hard reload the page with cache busting
-      window.location.href = '/login?t=' + new Date().getTime();
-      
-    } catch (error) {
-      console.error('Error fixing redirect:', error);
-      toast.error('Failed to fix the issue. Please try again.');
     }
   };
 
@@ -171,6 +152,17 @@ const LoginPage = () => {
         </div>
 
         <div className="space-y-8">
+          {/* Show warning banner for redirect issues */}
+          {hasRedirectIssue && (
+            <div className="bg-amber-950/30 border border-amber-500/20 rounded-lg p-4 mb-6 text-sm text-amber-400">
+              <p className="font-medium mb-2">Redirect Issue Detected</p>
+              <p className="text-xs text-amber-300/80 mb-3">
+                Your browser might be trying to redirect to another site. Please use the fix option below.
+              </p>
+              <RedirectFixButton />
+            </div>
+          )}
+
           <form onSubmit={handleEmailSignIn} className="space-y-4">
             <div className="form-element">
               <Input
@@ -223,21 +215,13 @@ const LoginPage = () => {
             </div>
           )}
 
-          <div className="form-element mt-8 pt-4 border-t border-gray-800">
-            <p className="text-xs text-gray-500 mb-2">Having trouble signing in?</p>
-            <div className="flex flex-col gap-2">
-              <ClearSessionButton />
-              <CustomButton
-                variant="outline" 
-                onClick={handleFixRedirect}
-                className="w-full"
-                animation="lift"
-              >
-                <RotateCcw className="mr-2 h-4 w-4" />
-                Fix Redirect Issue
-              </CustomButton>
+          {/* Only show the regular redirect fix if no issue detected */}
+          {!hasRedirectIssue && (
+            <div className="form-element mt-8 pt-4 border-t border-gray-800">
+              <p className="text-xs text-gray-500 mb-2">Having trouble signing in?</p>
+              <RedirectFixButton />
             </div>
-          </div>
+          )}
 
           <p className="form-element text-center text-xs text-gray-500">
             By continuing, you agree to our Terms of Service and Privacy Policy

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { User } from '@/types/auth';
 import { supabase } from '@/integrations/supabase/client';
@@ -84,8 +85,7 @@ export const useSupabaseAuth = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-          skipBrowserRedirect: false
+          redirectTo: `${window.location.origin}/auth/callback`
         }
       });
       
@@ -126,8 +126,7 @@ export const useSupabaseAuth = () => {
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
-          shouldCreateUser: true
+          emailRedirectTo: `${window.location.origin}/auth/callback`
         }
       });
       

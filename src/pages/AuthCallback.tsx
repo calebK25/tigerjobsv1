@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
 
 const AuthCallback = () => {
   const navigate = useNavigate();
@@ -10,43 +9,41 @@ const AuthCallback = () => {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        console.log('Processing auth callback...');
-        
-        // Clear client-side storage
-        localStorage.clear();
-        sessionStorage.clear();
-        
-        // Clear cookies
-        document.cookie.split(";").forEach(function(c) {
-          document.cookie = c
-            .replace(/^ +/, "")
-            .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-        });
-        
-        // Clear any existing Supabase session
-        const { error: signOutError } = await supabase.auth.signOut({ scope: 'local' });
-        if (signOutError) {
-          console.error('Error clearing existing sessions:', signOutError);
+        // Check if we have a hash with token (Lovable redirect issue)
+        if (window.location.hash && window.location.hash.includes('access_token')) {
+          console.log('Detected token in URL hash, extracting...');
+          
+          // Extract parameters from the hash
+          const hash = window.location.hash.substring(1);
+          const params = new URLSearchParams(hash);
+          
+          // Get the tokens
+          const accessToken = params.get('access_token');
+          const refreshToken = params.get('refresh_token');
+          const expiresIn = params.get('expires_in');
+          
+          if (accessToken) {
+            console.log('Setting session with extracted token');
+            
+            // Set the session manually
+            const { error } = await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken || '',
+            });
+            
+            if (error) {
+              console.error('Failed to set session with token:', error);
+              throw error;
+            }
+            
+            console.log('Session set successfully, redirecting to dashboard');
+            navigate('/', { replace: true });
+            return;
+          }
         }
         
-        // Extract hash if present (contains token)
-        const hash = window.location.hash;
-        if (hash && hash.includes('access_token')) {
-          console.log('Hash contains access_token, redirecting to proper callback');
-          // We have a hashed URL with tokens - need to handle this properly
-          
-          // Get the current URL without the hash
-          const baseUrl = window.location.href.split('#')[0];
-          
-          // Rebuild the URL correctly for Supabase
-          const urlWithoutHash = `${baseUrl}?${hash.substring(1)}`;
-          
-          // Redirect to the new URL format
-          window.location.href = urlWithoutHash;
-          return;
-        }
-        
-        // Process the standard callback
+        // Standard flow - get the session from the URL
+        console.log('Getting session from URL params');
         const { data, error } = await supabase.auth.getSession();
         
         if (error) {
@@ -55,17 +52,14 @@ const AuthCallback = () => {
         }
         
         if (data?.session) {
-          console.log('Authentication successful, redirecting to dashboard');
-          toast.success('Successfully logged in!');
+          console.log('Session obtained successfully, redirecting to dashboard');
           navigate('/', { replace: true });
         } else {
-          console.error('No session created during callback');
-          toast.error('Login failed. Please try again.');
+          console.error('No session data found');
           navigate('/login', { replace: true });
         }
       } catch (error) {
         console.error('Auth callback processing error:', error);
-        toast.error('Authentication failed. Please try again.');
         navigate('/login', { replace: true });
       }
     };
@@ -77,6 +71,7 @@ const AuthCallback = () => {
     <div className="min-h-screen flex flex-col items-center justify-center bg-black text-white">
       <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
       <p className="text-xl">Completing authentication...</p>
+      <p className="text-sm text-gray-500 mt-4">If you're redirected to another site, please come back to this page.</p>
     </div>
   );
 };
