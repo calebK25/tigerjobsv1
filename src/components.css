@@ -1,0 +1,69 @@
+
+/* src/components.css */
+
+/* Kanban and interview card styles */
+.kanban-column {
+  @apply border border-border rounded-md bg-card p-4 min-h-[500px] w-full;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.interview-card {
+  @apply bg-white border border-border rounded-md p-4 mb-3 shadow-sm hover:shadow transition-all cursor-pointer;
+  transform: translateZ(0);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dark .interview-card {
+  @apply bg-card;
+}
+
+.interview-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+}
+
+.dark .interview-card:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.glass-card {
+  @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-lg;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.dashboard-card {
+  @apply bg-card hover:bg-secondary/50 transition-colors duration-200 rounded-lg p-6 border border-border;
+}
+
+.stats-card {
+  @apply dashboard-card space-y-2;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03);
+  transition: all 0.3s ease;
+}
+
+.card-shadow {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.card-shadow:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+.gradient-text {
+  @apply bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent;
+}
+
+.subtle-bg-hover {
+  @apply hover:bg-accent/10 transition-colors duration-200;
+}
+
+.sidebar-transition {
+  transition: width 0.2s ease-in-out;
+}
+
+/* Dark mode dropdown fixes */
+.dark .dropdown-menu-content {
+  @apply bg-card/95;
+}

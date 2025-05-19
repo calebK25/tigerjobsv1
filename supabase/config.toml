@@ -1,0 +1,8 @@
+
+project_id = "sapqzpssmxsfctzlsbip"
+
+[functions.import-sheets]
+verify_jwt = true
+
+[functions.calendar-sync]
+verify_jwt = true
