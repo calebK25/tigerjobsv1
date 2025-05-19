@@ -1,9 +1,9 @@
-
-@import './colors.css';
-@import './components.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import './colors.css';
+@import './components.css';
 @import './components/ui/animations.css';
 
 @layer base {

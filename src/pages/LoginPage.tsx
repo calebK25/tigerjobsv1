@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -7,6 +6,7 @@ import { Briefcase, ArrowRight, Mail, LogIn, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import gsap from 'gsap';
 import { toast } from 'sonner';
+import { ClearSessionButton } from '@/components/ui/clear-session-button';
 
 const LoginPage = () => {
   const { user, login, loginWithEmail, loading } = useAuth();
@@ -180,6 +180,11 @@ const LoginPage = () => {
               {authError}
             </div>
           )}
+
+          <div className="form-element mt-8 pt-4 border-t border-gray-800">
+            <p className="text-xs text-gray-500 mb-2">Having trouble signing in?</p>
+            <ClearSessionButton />
+          </div>
 
           <p className="form-element text-center text-xs text-gray-500">
             By continuing, you agree to our Terms of Service and Privacy Policy

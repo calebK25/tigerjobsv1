@@ -1,4 +1,3 @@
-
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
@@ -10,8 +9,13 @@ const AuthCallback = () => {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        // This will fetch the auth session from the URL
-        // No need to manually parse any hash/query params
+        // Clear any existing sessions
+        const { error: signOutError } = await supabase.auth.signOut({ scope: 'local' });
+        if (signOutError) {
+          console.error('Error clearing existing sessions:', signOutError);
+        }
+        
+        // Fetch the new session from the URL
         const { error } = await supabase.auth.getSession();
         
         if (error) {
