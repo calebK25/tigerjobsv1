@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.4";
 
@@ -117,8 +116,12 @@ serve(async (req) => {
     
     // Handle getAuthUrl action
     if (action === 'getAuthUrl') {
-      // Always get the origin from the request headers for consistent redirect
-      const origin = req.headers.get('origin') || 'https://preview--interview-flow-canvas.lovable.app';
+      // Get the host from request headers
+      const host = req.headers.get('host') || 'localhost:8080';
+      // Determine if it's http or https based on headers
+      const protocol = req.headers.get('x-forwarded-proto') || 'http';
+      // Get origin from headers or construct from host
+      const origin = req.headers.get('origin') || `${protocol}://${host}`;
       // Use the provided redirectUri or fall back to the origin + /calendar
       const finalRedirectUri = redirectUri || `${origin}/calendar`;
       console.log(`Using redirect URI: ${finalRedirectUri}`);
@@ -144,8 +147,12 @@ serve(async (req) => {
         });
       }
       
-      // Always get the origin from the request headers for consistent redirect
-      const origin = req.headers.get('origin') || 'https://preview--interview-flow-canvas.lovable.app';
+      // Get the host from request headers
+      const host = req.headers.get('host') || 'localhost:8080';
+      // Determine if it's http or https based on headers
+      const protocol = req.headers.get('x-forwarded-proto') || 'http';
+      // Get origin from headers or construct from host
+      const origin = req.headers.get('origin') || `${protocol}://${host}`;
       // Use the provided redirectUri or fall back to the origin + /calendar
       const finalRedirectUri = redirectUri || `${origin}/calendar`;
       console.log(`Using redirect URI for token exchange: ${finalRedirectUri}`);

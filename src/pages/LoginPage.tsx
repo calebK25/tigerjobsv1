@@ -2,11 +2,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { CustomButton } from '@/components/ui/custom-button';
-import { Briefcase, ArrowRight, Mail, LogIn, X } from 'lucide-react';
+import { Briefcase, ArrowRight, Mail, LogIn, X, RotateCcw } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import gsap from 'gsap';
 import { toast } from 'sonner';
 import { ClearSessionButton } from '@/components/ui/clear-session-button';
+import { supabase } from '@/integrations/supabase/client';
 
 const LoginPage = () => {
   const { user, login, loginWithEmail, loading } = useAuth();
@@ -60,6 +61,21 @@ const LoginPage = () => {
     }
   }, []);
 
+  // Check for redirect issues
+  useEffect(() => {
+    // Check if we've been redirected from a Lovable URL
+    const referrer = document.referrer;
+    const url = new URL(window.location.href);
+    const hasRedirectIssue = 
+      referrer.includes('lovable.app') || 
+      url.hash.includes('access_token') || 
+      url.search.includes('access_token');
+    
+    if (hasRedirectIssue) {
+      toast.error('Detected authentication redirect issue. Please clear your session.');
+    }
+  }, []);
+
   const handleLoginClick = async () => {
     setAuthError(null);
     try {
@@ -79,6 +95,32 @@ const LoginPage = () => {
     } catch (error) {
       console.error('Email sign-in error:', error);
       setAuthError('Failed to send magic link. Please try again.');
+    }
+  };
+
+  // Function to clear the redirect issue
+  const handleFixRedirect = async () => {
+    try {
+      // Clear browser storage
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      // Clear cookies
+      document.cookie.split(";").forEach(function(c) {
+        document.cookie = c
+          .replace(/^ +/, "")
+          .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+      });
+      
+      // Sign out from Supabase
+      await supabase.auth.signOut({ scope: 'global' });
+      
+      // Hard reload the page with cache busting
+      window.location.href = '/login?t=' + new Date().getTime();
+      
+    } catch (error) {
+      console.error('Error fixing redirect:', error);
+      toast.error('Failed to fix the issue. Please try again.');
     }
   };
 
@@ -183,7 +225,18 @@ const LoginPage = () => {
 
           <div className="form-element mt-8 pt-4 border-t border-gray-800">
             <p className="text-xs text-gray-500 mb-2">Having trouble signing in?</p>
-            <ClearSessionButton />
+            <div className="flex flex-col gap-2">
+              <ClearSessionButton />
+              <CustomButton
+                variant="outline" 
+                onClick={handleFixRedirect}
+                className="w-full"
+                animation="lift"
+              >
+                <RotateCcw className="mr-2 h-4 w-4" />
+                Fix Redirect Issue
+              </CustomButton>
+            </div>
           </div>
 
           <p className="form-element text-center text-xs text-gray-500">
